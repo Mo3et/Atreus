@@ -12,7 +12,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -24,6 +23,7 @@ const (
 	UserService_UserRegister_FullMethodName    = "/user.service.v1.UserService/UserRegister"
 	UserService_UserLogin_FullMethodName       = "/user.service.v1.UserService/UserLogin"
 	UserService_GetUserInfo_FullMethodName     = "/user.service.v1.UserService/GetUserInfo"
+	UserService_UpdateUserInfo_FullMethodName  = "/user.service.v1.UserService/UpdateUserInfo"
 	UserService_GetUserInfos_FullMethodName    = "/user.service.v1.UserService/GetUserInfos"
 	UserService_UpdateFollow_FullMethodName    = "/user.service.v1.UserService/UpdateFollow"
 	UserService_UpdateFollower_FullMethodName  = "/user.service.v1.UserService/UpdateFollower"
@@ -36,24 +36,16 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	// 用户注册
 	UserRegister(ctx context.Context, in *UserRegisterRequest, opts ...grpc.CallOption) (*UserRegisterReply, error)
-	// 用户登陆
 	UserLogin(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginReply, error)
-	// 用户获取自己的信息
 	GetUserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoReply, error)
-	// 其他服务请求批量获取用户信息
+	UpdateUserInfo(ctx context.Context, in *UpdateUserInfoRequest, opts ...grpc.CallOption) (*UpdateUserInfoReply, error)
 	GetUserInfos(ctx context.Context, in *UserInfosRequest, opts ...grpc.CallOption) (*UserInfosReply, error)
-	// 其他服务请求更新某一用户的关注数
-	UpdateFollow(ctx context.Context, in *UpdateFollowRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 其他服务请求更新某一用户的粉丝数
-	UpdateFollower(ctx context.Context, in *UpdateFollowerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 其他服务请求更新某一用户的获赞数
-	UpdateFavorited(ctx context.Context, in *UpdateFavoritedRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 其他服务请求更新某一用户的作品数
-	UpdateWork(ctx context.Context, in *UpdateWorkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 其他服务请求更新某一用户的点赞数
-	UpdateFavorite(ctx context.Context, in *UpdateFavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateFollow(ctx context.Context, in *UpdateFollowRequest, opts ...grpc.CallOption) (*UpdateFollowReply, error)
+	UpdateFollower(ctx context.Context, in *UpdateFollowerRequest, opts ...grpc.CallOption) (*UpdateFollowerReply, error)
+	UpdateFavorited(ctx context.Context, in *UpdateFavoritedRequest, opts ...grpc.CallOption) (*UpdateFavoritedReply, error)
+	UpdateWork(ctx context.Context, in *UpdateWorkRequest, opts ...grpc.CallOption) (*UpdateWorkReply, error)
+	UpdateFavorite(ctx context.Context, in *UpdateFavoriteRequest, opts ...grpc.CallOption) (*UpdateFavoriteReply, error)
 }
 
 type userServiceClient struct {
@@ -91,6 +83,15 @@ func (c *userServiceClient) GetUserInfo(ctx context.Context, in *UserInfoRequest
 	return out, nil
 }
 
+func (c *userServiceClient) UpdateUserInfo(ctx context.Context, in *UpdateUserInfoRequest, opts ...grpc.CallOption) (*UpdateUserInfoReply, error) {
+	out := new(UpdateUserInfoReply)
+	err := c.cc.Invoke(ctx, UserService_UpdateUserInfo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) GetUserInfos(ctx context.Context, in *UserInfosRequest, opts ...grpc.CallOption) (*UserInfosReply, error) {
 	out := new(UserInfosReply)
 	err := c.cc.Invoke(ctx, UserService_GetUserInfos_FullMethodName, in, out, opts...)
@@ -100,8 +101,8 @@ func (c *userServiceClient) GetUserInfos(ctx context.Context, in *UserInfosReque
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateFollow(ctx context.Context, in *UpdateFollowRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *userServiceClient) UpdateFollow(ctx context.Context, in *UpdateFollowRequest, opts ...grpc.CallOption) (*UpdateFollowReply, error) {
+	out := new(UpdateFollowReply)
 	err := c.cc.Invoke(ctx, UserService_UpdateFollow_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -109,8 +110,8 @@ func (c *userServiceClient) UpdateFollow(ctx context.Context, in *UpdateFollowRe
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateFollower(ctx context.Context, in *UpdateFollowerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *userServiceClient) UpdateFollower(ctx context.Context, in *UpdateFollowerRequest, opts ...grpc.CallOption) (*UpdateFollowerReply, error) {
+	out := new(UpdateFollowerReply)
 	err := c.cc.Invoke(ctx, UserService_UpdateFollower_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -118,8 +119,8 @@ func (c *userServiceClient) UpdateFollower(ctx context.Context, in *UpdateFollow
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateFavorited(ctx context.Context, in *UpdateFavoritedRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *userServiceClient) UpdateFavorited(ctx context.Context, in *UpdateFavoritedRequest, opts ...grpc.CallOption) (*UpdateFavoritedReply, error) {
+	out := new(UpdateFavoritedReply)
 	err := c.cc.Invoke(ctx, UserService_UpdateFavorited_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -127,8 +128,8 @@ func (c *userServiceClient) UpdateFavorited(ctx context.Context, in *UpdateFavor
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateWork(ctx context.Context, in *UpdateWorkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *userServiceClient) UpdateWork(ctx context.Context, in *UpdateWorkRequest, opts ...grpc.CallOption) (*UpdateWorkReply, error) {
+	out := new(UpdateWorkReply)
 	err := c.cc.Invoke(ctx, UserService_UpdateWork_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -136,8 +137,8 @@ func (c *userServiceClient) UpdateWork(ctx context.Context, in *UpdateWorkReques
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateFavorite(ctx context.Context, in *UpdateFavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *userServiceClient) UpdateFavorite(ctx context.Context, in *UpdateFavoriteRequest, opts ...grpc.CallOption) (*UpdateFavoriteReply, error) {
+	out := new(UpdateFavoriteReply)
 	err := c.cc.Invoke(ctx, UserService_UpdateFavorite_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -149,24 +150,16 @@ func (c *userServiceClient) UpdateFavorite(ctx context.Context, in *UpdateFavori
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	// 用户注册
 	UserRegister(context.Context, *UserRegisterRequest) (*UserRegisterReply, error)
-	// 用户登陆
 	UserLogin(context.Context, *UserLoginRequest) (*UserLoginReply, error)
-	// 用户获取自己的信息
 	GetUserInfo(context.Context, *UserInfoRequest) (*UserInfoReply, error)
-	// 其他服务请求批量获取用户信息
+	UpdateUserInfo(context.Context, *UpdateUserInfoRequest) (*UpdateUserInfoReply, error)
 	GetUserInfos(context.Context, *UserInfosRequest) (*UserInfosReply, error)
-	// 其他服务请求更新某一用户的关注数
-	UpdateFollow(context.Context, *UpdateFollowRequest) (*emptypb.Empty, error)
-	// 其他服务请求更新某一用户的粉丝数
-	UpdateFollower(context.Context, *UpdateFollowerRequest) (*emptypb.Empty, error)
-	// 其他服务请求更新某一用户的获赞数
-	UpdateFavorited(context.Context, *UpdateFavoritedRequest) (*emptypb.Empty, error)
-	// 其他服务请求更新某一用户的作品数
-	UpdateWork(context.Context, *UpdateWorkRequest) (*emptypb.Empty, error)
-	// 其他服务请求更新某一用户的点赞数
-	UpdateFavorite(context.Context, *UpdateFavoriteRequest) (*emptypb.Empty, error)
+	UpdateFollow(context.Context, *UpdateFollowRequest) (*UpdateFollowReply, error)
+	UpdateFollower(context.Context, *UpdateFollowerRequest) (*UpdateFollowerReply, error)
+	UpdateFavorited(context.Context, *UpdateFavoritedRequest) (*UpdateFavoritedReply, error)
+	UpdateWork(context.Context, *UpdateWorkRequest) (*UpdateWorkReply, error)
+	UpdateFavorite(context.Context, *UpdateFavoriteRequest) (*UpdateFavoriteReply, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -183,22 +176,25 @@ func (UnimplementedUserServiceServer) UserLogin(context.Context, *UserLoginReque
 func (UnimplementedUserServiceServer) GetUserInfo(context.Context, *UserInfoRequest) (*UserInfoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserInfo not implemented")
 }
+func (UnimplementedUserServiceServer) UpdateUserInfo(context.Context, *UpdateUserInfoRequest) (*UpdateUserInfoReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserInfo not implemented")
+}
 func (UnimplementedUserServiceServer) GetUserInfos(context.Context, *UserInfosRequest) (*UserInfosReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserInfos not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateFollow(context.Context, *UpdateFollowRequest) (*emptypb.Empty, error) {
+func (UnimplementedUserServiceServer) UpdateFollow(context.Context, *UpdateFollowRequest) (*UpdateFollowReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFollow not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateFollower(context.Context, *UpdateFollowerRequest) (*emptypb.Empty, error) {
+func (UnimplementedUserServiceServer) UpdateFollower(context.Context, *UpdateFollowerRequest) (*UpdateFollowerReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFollower not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateFavorited(context.Context, *UpdateFavoritedRequest) (*emptypb.Empty, error) {
+func (UnimplementedUserServiceServer) UpdateFavorited(context.Context, *UpdateFavoritedRequest) (*UpdateFavoritedReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFavorited not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateWork(context.Context, *UpdateWorkRequest) (*emptypb.Empty, error) {
+func (UnimplementedUserServiceServer) UpdateWork(context.Context, *UpdateWorkRequest) (*UpdateWorkReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateWork not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateFavorite(context.Context, *UpdateFavoriteRequest) (*emptypb.Empty, error) {
+func (UnimplementedUserServiceServer) UpdateFavorite(context.Context, *UpdateFavoriteRequest) (*UpdateFavoriteReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFavorite not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
@@ -264,6 +260,24 @@ func _UserService_GetUserInfo_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetUserInfo(ctx, req.(*UserInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateUserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateUserInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdateUserInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateUserInfo(ctx, req.(*UpdateUserInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -394,6 +408,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserInfo",
 			Handler:    _UserService_GetUserInfo_Handler,
+		},
+		{
+			MethodName: "UpdateUserInfo",
+			Handler:    _UserService_UpdateUserInfo_Handler,
 		},
 		{
 			MethodName: "GetUserInfos",

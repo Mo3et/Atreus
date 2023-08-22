@@ -3,7 +3,10 @@ module github.com/toomanysource/atreus
 go 1.20
 
 require (
+	github.com/antonfisher/nested-logrus-formatter v1.3.1
 	github.com/go-kratos/kratos/v2 v2.7.0
+	github.com/sirupsen/logrus v1.9.3
+	go.uber.org/automaxprocs v1.5.3
 	google.golang.org/genproto/googleapis/api v0.0.0-20230815205213-6bfd019c3878
 	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
@@ -12,12 +15,16 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/go-logr/logr v1.2.4 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	go.uber.org/automaxprocs v1.5.3 // indirect
+	go.opentelemetry.io/otel v1.16.0 // indirect
+	go.opentelemetry.io/otel/metric v1.16.0 // indirect
+	go.opentelemetry.io/otel/trace v1.16.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 )
 

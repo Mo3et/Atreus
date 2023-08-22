@@ -3,11 +3,6 @@ package biz
 import (
 	"context"
 	"errors"
-	"time"
-
-	"github.com/toomanysource/atreus/pkg/common"
-
-	"github.com/toomanysource/atreus/app/user/service/internal/conf"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -28,16 +23,24 @@ type User struct {
 	TotalFavorited  uint32 `gorm:"column:total_favorited;not null;default:0"`
 	WorkCount       uint32 `gorm:"column:work_count;not null;default:0"`
 	FavoriteCount   uint32 `grom:"column:favorite_count;not null;default:0"`
-	IsFollow        bool   `gorm:"-"`
-	Token           string `gorm:"-"`
+	IsFollow        bool
+}
+
+// UserInfo is the information that user can modify
+type UserInfo struct {
+	Name            string
+	Avatar          string
+	BackgroundImage string
+	Signature       string
 }
 
 // UserRepo is a user repo.
 type UserRepo interface {
 	Save(context.Context, *User) (*User, error)
 	FindById(context.Context, uint32) (*User, error)
-	FindByIds(context.Context, uint32, []uint32) ([]*User, error)
+	FindByIds(context.Context, []uint32) ([]*User, error)
 	FindByUsername(context.Context, string) (*User, error)
+	UpdateInfo(context.Context, *UserInfo) error
 	UpdateFollow(context.Context, uint32, int32) error
 	UpdateFollower(context.Context, uint32, int32) error
 	UpdateFavorited(context.Context, uint32, int32) error
@@ -48,13 +51,12 @@ type UserRepo interface {
 // UserUsecase is a user usecase.
 type UserUsecase struct {
 	repo UserRepo
-	conf *conf.JWT
 	log  *log.Helper
 }
 
 // NewUserUsecase new a user usecase.
-func NewUserUsecase(repo UserRepo, conf *conf.JWT, logger log.Logger) *UserUsecase {
-	return &UserUsecase{repo: repo, conf: conf, log: log.NewHelper(logger)}
+func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
+	return &UserUsecase{repo: repo, log: log.NewHelper(logger)}
 }
 
 // Register .
@@ -67,26 +69,15 @@ func (uc *UserUsecase) Register(ctx context.Context, username, password string) 
 		return nil, errors.New("the username has been registered")
 	}
 
-	password = common.GenSaltPassword(username, password)
-
 	// save user
 	regUser := &User{
 		Username: username,
 		Password: password,
-		// Name is same as username
-		Name: username,
 	}
 	user, err = uc.repo.Save(ctx, regUser)
 	if err != nil {
 		return nil, ErrInternal
 	}
-
-	// 生成 token
-	token, err := common.ProduceToken(uc.conf.Http.TokenKey, user.Id, 7*24*time.Hour)
-	if err != nil {
-		return nil, ErrInternal
-	}
-	user.Token = token
 	return user, nil
 }
 
@@ -99,27 +90,15 @@ func (uc *UserUsecase) Login(ctx context.Context, username, password string) (*U
 	if user.Username == "" {
 		return nil, errors.New("can not find registered user")
 	}
-	password = common.GenSaltPassword(username, password)
 	if user.Password != password {
 		return nil, errors.New("incorrect password")
 	}
 
-	// 生成 token
-	token, err := common.ProduceToken(uc.conf.Http.TokenKey, user.Id, 7*24*time.Hour)
-	if err != nil {
-		return nil, ErrInternal
-	}
-	user.Token = token
 	return user, nil
 }
 
 // GetInfo .
-func (uc *UserUsecase) GetInfo(ctx context.Context, userId uint32, tokenString string) (*User, error) {
-	token, err := common.ParseToken("AtReUs", tokenString)
-	if err != nil {
-		return nil, err
-	}
-	_, err = common.GetTokenData(token)
+func (uc *UserUsecase) GetInfo(ctx context.Context, userId uint32) (*User, error) {
 	user, err := uc.repo.FindById(ctx, userId)
 	if err != nil {
 		return nil, ErrInternal
@@ -131,9 +110,18 @@ func (uc *UserUsecase) GetInfo(ctx context.Context, userId uint32, tokenString s
 	return user, nil
 }
 
+// UpdateInfo not implement yet
+func (uc *UserUsecase) UpdateInfo(ctx context.Context, info *UserInfo) error {
+	err := uc.repo.UpdateInfo(ctx, info)
+	if err != nil {
+		return ErrInternal
+	}
+	return nil
+}
+
 // GetInfos .
-func (uc *UserUsecase) GetInfos(ctx context.Context, userId uint32, userIds []uint32) ([]*User, error) {
-	users, err := uc.repo.FindByIds(ctx, userId, userIds)
+func (uc *UserUsecase) GetInfos(ctx context.Context, userIds []uint32) ([]*User, error) {
+	users, err := uc.repo.FindByIds(ctx, userIds)
 	if err != nil {
 		return nil, ErrInternal
 	}

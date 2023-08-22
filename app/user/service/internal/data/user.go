@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 
-	"github.com/toomanysource/atreus/app/user/service/internal/biz"
-	"github.com/toomanysource/atreus/app/user/service/internal/server"
-	"github.com/toomanysource/atreus/pkg/gorms"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
+
+	"github.com/toomanysource/atreus/app/user/service/internal/biz"
+	"github.com/toomanysource/atreus/pkg/gorms"
 )
 
 var userTableName = "users"
@@ -23,14 +22,9 @@ func (User) TableName() string {
 	return userTableName
 }
 
-type RelationRepo interface {
-	IsFollow(ctx context.Context, userId uint32, toUserId []uint32) ([]bool, error)
-}
-
 type userRepo struct {
-	data         *Data
-	relationRepo RelationRepo
-	log          *log.Helper
+	data *Data
+	log  *log.Helper
 }
 
 func (*userRepo) initDB(conn *gorms.GormConn) {
@@ -41,11 +35,10 @@ func (*userRepo) initDB(conn *gorms.GormConn) {
 }
 
 // NewUserRepo .
-func NewUserRepo(data *Data, relationRepo server.RelationConn, logger log.Logger) biz.UserRepo {
+func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 	repo := &userRepo{
-		data:         data,
-		relationRepo: NewRelationRepo(relationRepo),
-		log:          log.NewHelper(logger),
+		data: data,
+		log:  log.NewHelper(logger),
 	}
 	conn := data.db
 	repo.initDB(conn)
@@ -54,9 +47,7 @@ func NewUserRepo(data *Data, relationRepo server.RelationConn, logger log.Logger
 
 // Save .
 func (r *userRepo) Save(ctx context.Context, user *biz.User) (*biz.User, error) {
-	u := User{
-		User: user,
-	}
+	u := User{User: user}
 	session := r.data.db.Session(ctx)
 	err := session.Save(&u).Error
 	if err != nil {
@@ -84,43 +75,24 @@ func (r *userRepo) FindById(ctx context.Context, id uint32) (*biz.User, error) {
 }
 
 // FindByIds .
-func (r *userRepo) FindByIds(ctx context.Context, userId uint32, ids []uint32) ([]*biz.User, error) {
-	us := make([]*User, len(ids))
+func (r *userRepo) FindByIds(ctx context.Context, ids []uint32) ([]*biz.User, error) {
+	var us []*User
 	session := r.data.db.Session(ctx)
 	err := session.Model(&User{}).
 		Where("id IN ?", ids).
 		Find(&us).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return []*biz.User{}, nil
+	}
 	if err != nil {
 		return nil, err
 	}
-	if len(us) == 0 {
-		return nil, nil
-	}
-	// gorm使用IN查询，如果是根据主键，将会略重复数据。若非主键，则不会忽略
-	resultMap := make(map[uint32]*biz.User, len(ids))
-	for _, u := range us {
-		resultMap[u.Id] = u.User
-	}
-	result := make([]*biz.User, len(ids))
-	for i, id := range ids {
-		result[i] = resultMap[id]
-	}
 
-	// 登陆用户才需要判断是否关注
-	if userId != 0 {
-		isFollow, err := r.relationRepo.IsFollow(ctx, userId, ids)
-		if err != nil {
-			return nil, err
-		}
-		for i, u := range result {
-			u.IsFollow = isFollow[i]
-		}
-		return result, nil
+	bizus := make([]*biz.User, len(us))
+	for i := range bizus {
+		bizus[i] = us[i].User
 	}
-	for _, u := range result {
-		u.IsFollow = false
-	}
-	return result, nil
+	return bizus, nil
 }
 
 // FindByUsername .
@@ -138,6 +110,11 @@ func (r *userRepo) FindByUsername(ctx context.Context, username string) (*biz.Us
 	}
 
 	return u.User, nil
+}
+
+// UpdateInfo not implement yet
+func (r *userRepo) UpdateInfo(ctx context.Context, info *biz.UserInfo) error {
+	return errors.New("not implement")
 }
 
 // UpdateFollow .

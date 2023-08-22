@@ -1,14 +1,14 @@
 package data
 
 import (
-	"github.com/toomanysource/atreus/app/user/service/internal/conf"
-	"github.com/toomanysource/atreus/pkg/gorms"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"github.com/toomanysource/atreus/app/user/service/internal/conf"
+	"github.com/toomanysource/atreus/pkg/gorms"
 )
 
 // ProviderSet is data providers.

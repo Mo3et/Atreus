@@ -2,6 +2,7 @@ package gorms
 
 import (
 	"context"
+
 	"gorm.io/gorm"
 )
 
@@ -23,6 +24,7 @@ func (g *GormConn) Begin() {
 func New(db *gorm.DB) *GormConn {
 	return &GormConn{db: db, tx: db}
 }
+
 func (g *GormConn) Session(ctx context.Context) *gorm.DB {
 	return g.db.Session(&gorm.Session{Context: ctx})
 }
@@ -30,6 +32,7 @@ func (g *GormConn) Session(ctx context.Context) *gorm.DB {
 func (g *GormConn) Rollback() {
 	g.tx.Rollback()
 }
+
 func (g *GormConn) Commit() {
 	g.tx.Commit()
 }

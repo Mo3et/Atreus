@@ -4,14 +4,13 @@ import (
 	"flag"
 	"os"
 
-	"github.com/toomanysource/atreus/pkg/logX"
-
 	"github.com/toomanysource/atreus/app/user/service/internal/conf"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
@@ -21,7 +20,7 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name = "user"
+	Name string
 	// Version is the version of the compiled software.
 	Version string
 	// flagconf is the config flag.
@@ -50,17 +49,14 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
 
 func main() {
 	flag.Parse()
-	l := logX.NewDefaultLogger()
-	//f, err := l.FilePath("../../../../logs/user/" + l.SetTimeFileName("", false))
-	//if err != nil {
-	//	panic(err)
-	//}
-	//writer := io.MultiWriter(f, os.Stdout)
-	l.SetOutput(os.Stdout)
-	l.SetLevel(log.LevelDebug)
-	logger := log.With(l,
-		"service", Name,
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
 		"caller", log.DefaultCaller,
+		"service.id", id,
+		"service.name", Name,
+		"service.version", Version,
+		"trace.id", tracing.TraceID(),
+		"span.id", tracing.SpanID(),
 	)
 	c := config.New(
 		config.WithSource(
@@ -78,7 +74,7 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Client, bc.Jwt, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
 	if err != nil {
 		panic(err)
 	}

@@ -49,6 +49,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.out
-          #  verbose: true
+          verbose: true
         #run: |
         #  bash <(curl -s https://codecov.io/bash)

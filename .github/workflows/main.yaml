@@ -18,7 +18,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4.1.0
         with:
-          go-version: "1.20"
+          go-version: "1.20.7"
           # cache: true
           # cache-dependency-path: go.sum
 
@@ -27,20 +27,20 @@ jobs:
           echo "GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
-      - name: Cache Go modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go
+      # - name: Cache Go modules
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: |
+      #       ~/.cache/go-build
+      #       ~/go/pkg/mod
+      #     key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-go
 
-      - name: Docker Compose Action
-        uses: isbang/compose-action@v1.5.1
-        with:
-          compose-file: "./deploy/dockercompose/docker-compose.yaml"
+      # - name: Docker Compose Action
+      #   uses: isbang/compose-action@v1.5.1
+      #   with:
+      #     compose-file: "./deploy/dockercompose/docker-compose.yaml"
 
       - name: Generate coverage report
         run: |

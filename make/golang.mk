@@ -28,7 +28,7 @@ test: ## Run go unit tests
 test: go.test
 
 .PHONY: test-coverage
-test-coverage: ## Run go unit tests in coverage
+test-coverage: ## Run go unit tests with coverage
 test-coverage: go.test.coverage
 
 .PHONY: style
@@ -67,7 +67,7 @@ go.test:
 
 .PHONY: go.test.coverage
 go.test.coverage:
-	@echo "======> Running unit tests coverage in app"
+	@echo "======> Running unit tests with coverage in app"
 	@go test -race -v -coverprofile=coverage.out ./app/...
 
 .PHONY: go.style

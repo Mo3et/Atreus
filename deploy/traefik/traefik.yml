@@ -1,0 +1,14 @@
+# traefik.yml
+api:
+  dashboard: true
+
+entryPoints:
+  web:
+    address: ":3378"
+
+providers:
+  file:
+    filename: "./dynamic_conf/http.yml"
+    watch: true
+log:
+  level: INFO

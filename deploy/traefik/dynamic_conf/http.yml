@@ -1,0 +1,13 @@
+    http:
+      routers:
+      user-router:
+        rule: "PathPrefix(`/douyin/user`)"
+   #    || Path(`/douyin/user/login`)"
+        service: user-service
+
+      services:
+      user-service:
+        loadBalancer:
+          servers:
+            # - url: "http://localhost:18001"
+            - url: "http://user-service:8001"
